@@ -23,7 +23,7 @@ ENV CFLAGS="-w" CXXFLAGS="-w"
 RUN ./bootstrap.sh && \
     CONFIG_OPTS="" && \
     if [ "$TARGETARCH" = "arm64" ]; then CONFIG_OPTS="--disable-sse2"; fi && \
-    ./configure $CONFIG_OPTS --datadir=/usr/local/share/libpostal && \
+    ./configure $CONFIG_OPTS --enable-silent-rules --datadir=/usr/local/share/libpostal && \
     make -s -j$(nproc) && \
     make install
 
