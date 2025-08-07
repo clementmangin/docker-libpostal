@@ -1,0 +1,40 @@
+FROM --platform=$BUILDPLATFORM debian:bookworm-slim AS builder
+
+LABEL org.opencontainers.image.authors="clement.mangin@pm.me"
+LABEL org.opencontainers.image.source="https://github.com/clementmangin/docker-libpostal"
+
+ARG TARGETARCH
+
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates \
+    git \
+    build-essential \
+    curl \
+    autoconf \
+    automake \
+    libtool \
+    pkg-config \
+ && rm -rf /var/lib/apt/lists/*
+
+RUN git clone https://github.com/openvenues/libpostal /tmp/libpostal
+
+WORKDIR /tmp/libpostal
+
+ENV CFLAGS="-w" CXXFLAGS="-w"
+
+RUN ./bootstrap.sh && \
+    CONFIG_OPTS="" && \
+    if [ "$TARGETARCH" = "arm64" ]; then CONFIG_OPTS="--disable-sse2"; fi && \
+    ./configure $CONFIG_OPTS --enable-silent-rules --datadir=/usr/local/share/libpostal && \
+    make -s -j$(nproc) && \
+    make install
+
+FROM --platform=$BUILDPLATFORM debian:bookworm-slim AS dist
+
+COPY --from=builder /usr/local/lib/libpostal.so* /usr/local/lib/
+COPY --from=builder /usr/local/share/libpostal /usr/local/share/libpostal
+COPY --from=builder /usr/local/include/libpostal /usr/local/include/libpostal
+COPY --from=builder /usr/local/bin/libpostal_data /usr/local/bin/
+
+RUN ldconfig
