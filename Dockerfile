@@ -24,7 +24,7 @@ RUN ./bootstrap.sh && \
     CONFIG_OPTS="" && \
     if [ "$TARGETARCH" = "arm64" ]; then CONFIG_OPTS="--disable-sse2"; fi && \
     ./configure $CONFIG_OPTS --datadir=/usr/local/share/libpostal && \
-    make -j$(nproc) && \
+    make -s -j$(nproc) && \
     make install
 
 FROM --platform=$BUILDPLATFORM alpine:latest AS dist
