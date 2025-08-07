@@ -10,8 +10,6 @@ on:
     - cron: '15 17 * * *'
   push:
     branches: [ "main" ]
-    # Publish semver tags as releases.
-    tags: [ 'latest', 'alpine' ]
   pull_request:
     branches: [ "main" ]
 
@@ -19,8 +17,7 @@ env:
   # Use docker.io for Docker Hub if empty
   REGISTRY: ghcr.io
   # github.repository as <account>/<repo>
-  IMAGE_NAME: ${{ github.repository }}
-
+  IMAGE_NAME: ${{ github.repository_owner }}/libpostal
 
 jobs:
   build:
@@ -68,6 +65,9 @@ jobs:
         uses: docker/metadata-action@96383f45573cb7f253c731d3b3ab81c87ef81934 # v5.0.0
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=latest
+            type=raw,value=alpine
 
       # Build and push Docker image with Buildx (don't push on PR)
       # https://github.com/docker/build-push-action

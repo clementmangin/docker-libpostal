@@ -24,9 +24,9 @@ RUN apk add --no-cache \
     build-base
 
 # Copy libpostal files from the libpostal:alpine image
-COPY --from=libpostal:alpine /usr/local/lib/libpostal.so* /usr/local/lib/
-COPY --from=libpostal:alpine /usr/local/share/libpostal /usr/local/share/libpostal
-COPY --from=libpostal:alpine /usr/local/include/libpostal /usr/local/include/libpostal
+COPY --from=ghcr.io/clementmangin/libpostal:latest /usr/local/lib/libpostal.so* /usr/local/lib/
+COPY --from=ghcr.io/clementmangin/libpostal:latest /usr/local/share/libpostal /usr/local/share/libpostal
+COPY --from=ghcr.io/clementmangin/libpostal:latest /usr/local/include/libpostal /usr/local/include/libpostal
 
 # Install Python dependencies
 RUN pip install postal
